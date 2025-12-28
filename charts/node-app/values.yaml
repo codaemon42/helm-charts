@@ -1,0 +1,108 @@
+replicaCount: 3
+
+nameOverride: node-app
+fullnameOverride: ""
+
+image:
+  repository: ghcr.io/codaemon42/node-hello
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+container:
+  port: 3000
+
+labels:
+  app: node-app
+
+configMap:
+  name: node-app-config
+
+env:
+  NODE_ENV: production
+
+service:
+  type: ClusterIP
+  port: 4000
+
+
+podAnnotations: {}
+
+podLabels: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+
+
+namespace: default
+
+clusterIssuer:
+  server: https://acme-staging-v02.api.letsencrypt.org/directory
+  email: "ops@example.com"
+  privateKeySecretRefName: cert-manager-private-key
+
+certificate:
+  secretName: cert-manager-master-tls
+  dnsNames:
+    - auth.usermanager.com
+
+
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    spec.ingressClassName: "nginx"
+    nginx.ingress.kubernetes.io/preserve-host: "true"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: auth.usermanager.com
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls:
+    - secretName: cert-manager-master-tls
+      hosts:
+        - auth.usermanager.com
+
+httpRoute:
+  enabled: false
+
+resources: {}
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+
+volumes: []
+  # - name: foo
+  #   secret:
+  #     secretName: mysecret
+  #     optional: false
+
+
+volumeMounts: []
+  # - name: foo
+  #   mountPath: "/etc/foo"
+  #   readOnly: true
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

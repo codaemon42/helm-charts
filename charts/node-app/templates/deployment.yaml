@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "node-app.fullname" . }}
+  labels:
+    {{- include "node-app.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "node-app.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "node-app.labels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ include "node-app.name" . }}
+          image: {{ include "node-app.image" . }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.configMap.name }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.container.port }}
+
+
