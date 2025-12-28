@@ -4,7 +4,9 @@ on:
   push:
     branches:
       - master
-
+permissions:
+  contents: write   # REQUIRED for GitHub Releases & tags
+  
 jobs:
   release:
     runs-on: ubuntu-latest
